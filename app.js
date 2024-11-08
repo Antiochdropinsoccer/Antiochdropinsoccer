@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
     const dateTimeInput = document.getElementById('date-time');
     const participantList = document.getElementById('participant-ul');
     const nameInput = document.getElementById('name');
@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextSaturday = new Date();
         nextSaturday.setDate(now.getDate() + (6 - now.getDay())); // Set to next Saturday (6 = Saturday)
         nextSaturday.setHours(8, 0, 0, 0); // Set to 8:00 AM
-
         return nextSaturday;
     }
 
@@ -42,33 +41,40 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Load existing participants or create a new array
         const participants = JSON.parse(localStorage.getItem(currentDateTime)) || [];
+        
+        // Prevent duplicate names
         if (!participants.includes(name)) {
             participants.push(name);
             localStorage.setItem(currentDateTime, JSON.stringify(participants));
-            loadParticipants();
+            loadParticipants(); // Reload the participant list
         } else {
             alert('You are already signed up!');
         }
-        nameInput.value = '';
+        nameInput.value = ''; // Clear the input field
     });
 
     // Function to load participants from localStorage
     function loadParticipants() {
         const participants = JSON.parse(localStorage.getItem(currentDateTime)) || [];
-        participantList.innerHTML = '';  // Clear the list first
+        participantList.innerHTML = ''; // Clear the current list
+
         participants.forEach((name, index) => {
             const li = document.createElement('li');
             li.textContent = name;
+
+            // Create a "Remove" button for each participant
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'Remove';
             removeBtn.addEventListener('click', () => {
-                participants.splice(index, 1);
+                participants.splice(index, 1); // Remove the participant
                 localStorage.setItem(currentDateTime, JSON.stringify(participants));
-                loadParticipants();
+                loadParticipants(); // Reload the participant list
             });
-            li.appendChild(removeBtn);
-            participantList.appendChild(li);
+
+            li.appendChild(removeBtn); // Append the remove button to the list item
+            participantList.appendChild(li); // Append the list item to the participant list
         });
     }
 });
